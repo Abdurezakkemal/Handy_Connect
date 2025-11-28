@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:handy_connect/features/auth/domain/repositories/auth_repository.dart';
 import 'package:handy_connect/features/auth/presentation/registration_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
@@ -36,7 +37,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message);
     } catch (e) {
-      throw Exception('An unknown error occurred.');
+      throw Exception(e.toString());
     }
   }
 
@@ -52,12 +53,51 @@ class AuthRepositoryImpl implements AuthRepository {
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message);
     } catch (e) {
-      throw Exception('An unknown error occurred.');
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        throw Exception('Google Sign in aborted');
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
+
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'uid': userCredential.user!.uid,
+          'name': userCredential.user!.displayName,
+          'email': userCredential.user!.email,
+          'userType': 'customer', // Default to customer
+          'location': '',
+          'socialLinks': {},
+          'profilePhoto': userCredential.user!.photoURL,
+        });
+      }
+
+      return userCredential;
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 
   @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+    await GoogleSignIn().signOut();
   }
 }

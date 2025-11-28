@@ -184,7 +184,7 @@ class _SignInFormState extends State<SignInForm> {
           // Google Sign-In Button
           OutlinedButton.icon(
             onPressed: () {
-              // TODO: Implement Google Sign-In
+              context.read<AuthBloc>().add(GoogleSignInRequested());
             },
             icon: Text(
               'G',

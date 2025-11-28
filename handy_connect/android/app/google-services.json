@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "723452359960",
+    "project_id": "handyconnect-834c1",
+    "storage_bucket": "handyconnect-834c1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723452359960:android:a5cb0d7e1f2d1aa569da6d",
+        "android_client_info": {
+          "package_name": "com.example.handy_connect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "723452359960-bi47sbm5hl0nhcb4bofin6kncr7ku9a0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.handy_connect",
+            "certificate_hash": "8caab8f6b4c6b50a26b2fd5d57c779be02d50942"
+          }
+        },
+        {
+          "client_id": "723452359960-vm6stld7r21nhknptd6tq53h2p36eo6q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbj339Igf9-j3cBfp_iSPQKU69rtGSjL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "723452359960-vm6stld7r21nhknptd6tq53h2p36eo6q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

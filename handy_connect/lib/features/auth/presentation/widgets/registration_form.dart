@@ -212,7 +212,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
           // Google Sign-In Button
           OutlinedButton.icon(
             onPressed: () {
-              // TODO: Implement Google Sign-In
+              context.read<AuthBloc>().add(GoogleSignInRequested());
             },
             icon: Text(
               'G',

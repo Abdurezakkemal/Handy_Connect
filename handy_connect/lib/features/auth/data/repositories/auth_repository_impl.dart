@@ -35,8 +35,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException in signUp: ${e.message}');
       throw Exception(e.message);
     } catch (e) {
+      print('Unknown error in signUp: $e');
       throw Exception(e.toString());
     }
   }
@@ -51,8 +53,10 @@ class AuthRepositoryImpl implements AuthRepository {
           .signInWithEmailAndPassword(email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException in signIn: ${e.message}');
       throw Exception(e.message);
     } catch (e) {
+      print('Unknown error in signIn: $e');
       throw Exception(e.toString());
     }
   }
@@ -91,6 +95,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return userCredential;
     } catch (e) {
+      print('Unknown error in signInWithGoogle: $e');
       throw Exception(e.toString());
     }
   }

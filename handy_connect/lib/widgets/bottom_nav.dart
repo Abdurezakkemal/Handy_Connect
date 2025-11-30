@@ -21,7 +21,10 @@ class BottomNavBarWidget extends StatelessWidget {
             icon: Icon(Icons.pending_actions),
             label: "Requests",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.engineering),
+            label: "Profile",
+          ),
         ],
       ),
     );

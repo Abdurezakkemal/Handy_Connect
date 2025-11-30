@@ -116,7 +116,8 @@ class HandymanHome extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HandymanListPage(),
+                          builder: (context) =>
+                              HandymanListPage(service: "Electrician"),
                         ),
                       );
                     },
@@ -128,7 +129,8 @@ class HandymanHome extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HandymanListPage(),
+                          builder: (context) =>
+                              HandymanListPage(service: "Plumber"),
                         ),
                       );
                     },
@@ -140,7 +142,8 @@ class HandymanHome extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HandymanListPage(),
+                          builder: (context) =>
+                              HandymanListPage(service: "Carpenter"),
                         ),
                       );
                     },
@@ -152,7 +155,8 @@ class HandymanHome extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HandymanListPage(),
+                          builder: (context) =>
+                              HandymanListPage(service: "Painter"),
                         ),
                       );
                     },
@@ -164,7 +168,8 @@ class HandymanHome extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HandymanListPage(),
+                          builder: (context) =>
+                              HandymanListPage(service: "AC Repair"),
                         ),
                       );
                     },
@@ -176,7 +181,8 @@ class HandymanHome extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HandymanListPage(),
+                          builder: (context) =>
+                              HandymanListPage(service: "General"),
                         ),
                       );
                     },

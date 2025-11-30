@@ -38,13 +38,16 @@ class HandymanCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Icon(Icons.person, size: 58),
-              // child: Image.network(
-              //   image,
-              //   width: 58,
-              //   height: 58,
-              //   fit: BoxFit.cover,
-              // ),
+              child: SizedBox(
+                width: 58,
+                height: 58,
+                child: Image.network(
+                  image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, _, _) =>
+                      Icon(Icons.engineering, size: 58),
+                ),
+              ),
             ),
 
             const SizedBox(width: 12),

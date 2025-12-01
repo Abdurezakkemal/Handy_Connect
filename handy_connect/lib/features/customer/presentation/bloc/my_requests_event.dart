@@ -16,3 +16,7 @@ class FetchMyRequests extends MyRequestsEvent {
   @override
   List<Object> get props => [customerId];
 }
+
+class BackButtonPressed extends MyRequestsEvent {
+  const BackButtonPressed();
+}

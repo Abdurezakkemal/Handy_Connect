@@ -22,6 +22,9 @@ import 'package:handy_connect/features/customer/presentation/bloc/booking_bloc.d
 import 'package:handy_connect/features/customer/domain/usecases/get_my_requests.dart';
 import 'package:handy_connect/features/customer/presentation/bloc/my_requests_bloc.dart';
 import 'package:handy_connect/features/auth/domain/usecases/get_user_type.dart';
+import 'package:handy_connect/features/customer/domain/usecases/get_customer_profile.dart';
+import 'package:handy_connect/features/customer/domain/usecases/update_customer_profile.dart';
+import 'package:handy_connect/features/customer/presentation/bloc/customer_profile_bloc.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -50,6 +53,12 @@ void setupLocator() {
   locator.registerFactory(() => HandymanListBloc(getHandymen: locator()));
   locator.registerFactory(() => BookingBloc(createServiceRequest: locator()));
   locator.registerFactory(() => MyRequestsBloc(getMyRequests: locator()));
+  locator.registerFactory(
+    () => CustomerProfileBloc(
+      getCustomerProfile: locator(),
+      updateCustomerProfile: locator(),
+    ),
+  );
 
   // Use Cases
   locator.registerLazySingleton(() => SignUp(locator()));
@@ -63,6 +72,8 @@ void setupLocator() {
   locator.registerLazySingleton(() => CreateServiceRequest(locator()));
   locator.registerLazySingleton(() => GetMyRequests(locator()));
   locator.registerLazySingleton(() => GetUserType(locator()));
+  locator.registerLazySingleton(() => GetCustomerProfile(locator()));
+  locator.registerLazySingleton(() => UpdateCustomerProfile(locator()));
 
   // Repositories
   locator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());

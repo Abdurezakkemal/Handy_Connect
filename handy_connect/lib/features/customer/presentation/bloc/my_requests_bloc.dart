@@ -17,17 +17,45 @@ class MyRequestsBloc extends Bloc<MyRequestsEvent, MyRequestsState> {
     : _getMyRequests = getMyRequests,
       super(MyRequestsInitial()) {
     on<FetchMyRequests>(_onGetMyRequests);
+    on<BackButtonPressed>(_onBackButtonPressed);
   }
 
-  void _onGetMyRequests(FetchMyRequests event, Emitter<MyRequestsState> emit) {
-    emit(MyRequestsLoading());
-    _requestsSubscription?.cancel();
-    _requestsSubscription = _getMyRequests
-        .call(event.customerId)
-        .listen(
-          (requests) => emit(MyRequestsLoaded(requests)),
-          onError: (error) => emit(MyRequestsError(error.toString())),
-        );
+  void _onBackButtonPressed(
+    BackButtonPressed event,
+    Emitter<MyRequestsState> emit,
+  ) {
+    // This will be handled by the UI to navigate back
+    // The BLoC doesn't need to do anything special here
+  }
+
+  Future<void> _onGetMyRequests(
+    FetchMyRequests event,
+    Emitter<MyRequestsState> emit,
+  ) async {
+    try {
+      emit(MyRequestsLoading());
+      _requestsSubscription?.cancel();
+
+      final requestsStream = _getMyRequests.call(event.customerId);
+
+      await emit.onEach<dynamic>(
+        requestsStream,
+        onData: (requests) {
+          if (!isClosed) {
+            emit(MyRequestsLoaded(requests));
+          }
+        },
+        onError: (error, stackTrace) {
+          if (!isClosed) {
+            emit(MyRequestsError(error.toString()));
+          }
+        },
+      );
+    } catch (e) {
+      if (!isClosed) {
+        emit(MyRequestsError(e.toString()));
+      }
+    }
   }
 
   @override

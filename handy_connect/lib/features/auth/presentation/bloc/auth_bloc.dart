@@ -31,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInRequested>(_onSignInRequested);
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
     on<GetUserTypeRequested>(_onGetUserTypeRequested);
+    on<SignOutRequested>(_onSignOutRequested);
   }
 
   Future<void> _onSignUpRequested(
@@ -103,6 +104,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthenticatedWithUserType((state as Authenticated).user, userType),
         );
       }
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> _onSignOutRequested(
+    SignOutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      emit(Unauthenticated());
     } catch (e) {
       emit(AuthError(e.toString()));
     }

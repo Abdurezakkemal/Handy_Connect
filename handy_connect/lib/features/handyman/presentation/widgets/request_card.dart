@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handy_connect/features/handyman/domain/models/service_request.dart';
+import 'package:handy_connect/features/handyman/presentation/request_details_screen.dart';
+import 'package:handy_connect/features/handyman/presentation/bloc/requests_bloc.dart';
 
 class RequestCard extends StatelessWidget {
   final ServiceRequest request;
-
   const RequestCard({super.key, required this.request});
 
   @override
@@ -33,7 +35,14 @@ class RequestCard extends StatelessWidget {
           ],
         ),
         onTap: () {
-          // TODO: Navigate to Request Details Screen
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                value: BlocProvider.of<RequestsBloc>(context),
+                child: RequestDetailsScreen(request: request),
+              ),
+            ),
+          );
         },
       ),
     );

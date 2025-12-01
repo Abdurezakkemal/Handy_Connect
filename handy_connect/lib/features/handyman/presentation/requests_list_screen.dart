@@ -6,7 +6,6 @@ import 'package:handy_connect/features/handyman/domain/models/service_request.da
 import 'package:handy_connect/features/handyman/presentation/bloc/requests_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:handy_connect/features/handyman/presentation/widgets/request_card.dart';
-import 'package:handy_connect/features/handyman/presentation/request_details_screen.dart';
 
 class RequestsListScreen extends StatelessWidget {
   const RequestsListScreen({super.key});
@@ -14,13 +13,7 @@ class RequestsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) {
-        final authState = context.read<AuthBloc>().state;
-        if (authState is Authenticated) {
-          return locator<RequestsBloc>()..add(GetRequests(authState.user.uid));
-        }
-        return locator<RequestsBloc>();
-      },
+      create: (_) => locator<RequestsBloc>(),
       child: const RequestsListView(),
     );
   }
@@ -42,6 +35,21 @@ class _RequestsListViewState extends State<RequestsListView>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    final authState = context.read<AuthBloc>().state;
+    debugPrint('Auth state: ${authState.runtimeType}');
+    if (authState is AuthenticatedWithUserType) {
+      final uid = authState.user.uid;
+      debugPrint(
+        'Dispatching GetRequests for user (AuthenticatedWithUserType): $uid',
+      );
+      context.read<RequestsBloc>().add(GetRequests(uid));
+    } else if (authState is Authenticated) {
+      final uid = authState.user.uid;
+      debugPrint('Dispatching GetRequests for user (Authenticated): $uid');
+      context.read<RequestsBloc>().add(GetRequests(uid));
+    } else {
+      debugPrint('User is not authenticated, not fetching requests');
+    }
   }
 
   @override
@@ -74,7 +82,12 @@ class _RequestsListViewState extends State<RequestsListView>
       ),
       body: BlocBuilder<RequestsBloc, RequestsState>(
         builder: (context, state) {
+          debugPrint('Current RequestsBloc state: ${state.runtimeType}');
+          if (state is RequestsError) {
+            debugPrint('Error state: ${state.message}');
+          }
           if (state is RequestsLoading) {
+            debugPrint('Requests are being loaded...');
             return const Center(child: CircularProgressIndicator());
           } else if (state is RequestsLoaded) {
             return TabBarView(
@@ -143,19 +156,7 @@ class _RequestsListViewState extends State<RequestsListView>
       itemCount: requests.length,
       itemBuilder: (context, index) {
         final request = requests[index];
-        return GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: BlocProvider.of<RequestsBloc>(context),
-                  child: RequestDetailsScreen(request: request),
-                ),
-              ),
-            );
-          },
-          child: RequestCard(request: request),
-        );
+        return RequestCard(request: request);
       },
     );
   }

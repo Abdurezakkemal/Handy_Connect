@@ -25,13 +25,34 @@ class RequestsBloc extends Bloc<RequestsEvent, RequestsState> {
     on<UpdateRequestStatusEvent>(_onUpdateRequestStatus);
   }
 
-  void _onGetRequests(GetRequests event, Emitter<RequestsState> emit) {
-    emit(RequestsLoading());
-    _requestsSubscription?.cancel();
-    _requestsSubscription = _getServiceRequests(event.handymanId).listen(
-      (requests) => emit(RequestsLoaded(requests)),
-      onError: (error) => emit(RequestsError(error.toString())),
-    );
+  Future<void> _onGetRequests(
+    GetRequests event,
+    Emitter<RequestsState> emit,
+  ) async {
+    try {
+      emit(RequestsLoading());
+      _requestsSubscription?.cancel();
+
+      final requestsStream = _getServiceRequests(event.handymanId);
+
+      await emit.onEach<dynamic>(
+        requestsStream,
+        onData: (requests) {
+          if (!isClosed) {
+            emit(RequestsLoaded(requests));
+          }
+        },
+        onError: (error, stackTrace) {
+          if (!isClosed) {
+            emit(RequestsError(error.toString()));
+          }
+        },
+      );
+    } catch (e) {
+      if (!isClosed) {
+        emit(RequestsError(e.toString()));
+      }
+    }
   }
 
   Future<void> _onUpdateRequestStatus(

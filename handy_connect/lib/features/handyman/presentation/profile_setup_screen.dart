@@ -77,10 +77,33 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
       appBar: AppBar(
         title: const Text('Complete Your Profile'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AuthBloc>().add(SignOutRequested());
+            },
+          ),
+        ],
       ),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          if (state is ProfileUpdateSuccess) {
+          if (state is ProfileLoaded) {
+            _nameController.text = state.handyman.name;
+            _phoneController.text = state.handyman.phone;
+            _whatsappController.text =
+                state.handyman.socialLinks['whatsapp'] ?? '';
+            _telegramController.text =
+                state.handyman.socialLinks['telegram'] ?? '';
+            // Ensure a default service type is set if the loaded one is empty.
+            if (state.handyman.serviceType.isNotEmpty) {
+              _serviceType = state.handyman.serviceType;
+            } else {
+              _serviceType = _serviceTypes.first;
+            }
+            _locationController.text = state.handyman.location;
+            _descriptionController.text = state.handyman.description;
+          } else if (state is ProfileUpdateSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Profile updated successfully!')),
             );
@@ -93,16 +116,6 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
         builder: (context, state) {
           if (state is ProfileLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ProfileLoaded) {
-            _nameController.text = state.handyman.name;
-            _phoneController.text = state.handyman.phone;
-            _whatsappController.text =
-                state.handyman.socialLinks['whatsapp'] ?? '';
-            _telegramController.text =
-                state.handyman.socialLinks['telegram'] ?? '';
-            _serviceType = state.handyman.serviceType;
-            _locationController.text = state.handyman.location;
-            _descriptionController.text = state.handyman.description;
           }
 
           return SingleChildScrollView(
@@ -272,6 +285,11 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
   ];
 
   Widget _buildServiceTypeDropdown() {
+    // Ensure _serviceType is always set to a valid value
+    final selectedServiceType = _serviceTypes.contains(_serviceType)
+        ? _serviceType
+        : _serviceTypes.first;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -283,21 +301,21 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _serviceTypes.contains(_serviceType)
-                ? _serviceType
-                : _serviceTypes.first,
+            value: selectedServiceType,
             hint: const Text('Select a service type'),
             onChanged: (value) {
-              setState(() {
-                _serviceType = value;
-              });
+              if (value != null) {
+                setState(() {
+                  _serviceType = value;
+                });
+              }
             },
             items: _serviceTypes.map((type) {
               return DropdownMenuItem(value: type, child: Text(type));
             }).toList(),
             decoration: const InputDecoration(border: OutlineInputBorder()),
             validator: (value) {
-              if (value == null) {
+              if (value == null || value.isEmpty) {
                 return 'Please select a service type';
               }
               return null;

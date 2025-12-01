@@ -10,13 +10,13 @@ class MyRequestsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    final String uid = authState is Authenticated
+        ? authState.user.uid
+        : (authState as AuthenticatedWithUserType).user.uid;
+
     return BlocProvider(
-      create: (_) => locator<MyRequestsBloc>()
-        ..add(
-          FetchMyRequests(
-            (context.read<AuthBloc>().state as Authenticated).user.uid,
-          ),
-        ),
+      create: (_) => locator<MyRequestsBloc>()..add(FetchMyRequests(uid)),
       child: const MyRequestsView(),
     );
   }

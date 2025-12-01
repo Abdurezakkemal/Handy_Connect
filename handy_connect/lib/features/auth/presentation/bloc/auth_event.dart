@@ -38,3 +38,12 @@ class SignInRequested extends AuthEvent {
 class GoogleSignInRequested extends AuthEvent {}
 
 class SignOutRequested extends AuthEvent {}
+
+class GetUserTypeRequested extends AuthEvent {
+  final String uid;
+
+  const GetUserTypeRequested(this.uid);
+
+  @override
+  List<Object> get props => [uid];
+}

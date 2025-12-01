@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handy_connect/core/locator.dart';
 import 'package:handy_connect/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:handy_connect/features/auth/presentation/widgets/registration_form.dart';
+import 'package:handy_connect/features/handyman/presentation/profile_setup_screen.dart';
 
 enum UserType { customer, handyman }
 
@@ -16,11 +17,20 @@ class RegistrationScreen extends StatelessWidget {
         create: (_) => locator<AuthBloc>(),
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is Authenticated) {
+            if (state is RegistrationSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Successfully Registered!')),
               );
-              // TODO: Navigate to the appropriate home screen
+              if (state.userType == UserType.handyman) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
+                );
+              } else {
+                // TODO: Navigate to customer home screen
+              }
+            } else if (state is Authenticated) {
+              // Handle direct authentication (e.g., from Google Sign-In)
+              // TODO: Navigate to the appropriate home screen based on user type from Firestore
             } else if (state is AuthError) {
               ScaffoldMessenger.of(
                 context,

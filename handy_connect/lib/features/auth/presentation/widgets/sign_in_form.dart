@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handy_connect/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:handy_connect/features/auth/presentation/registration_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -12,7 +12,6 @@ class SignInForm extends StatefulWidget {
 
 class _SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
-  UserType _userType = UserType.customer;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -44,52 +43,6 @@ class _SignInFormState extends State<SignInForm> {
             style: TextStyle(fontSize: baseFontSize, color: Colors.grey),
           ),
           SizedBox(height: screenWidth * 0.1),
-
-          // User Type Toggle
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () =>
-                      setState(() => _userType = UserType.customer),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _userType == UserType.customer
-                        ? Colors.black
-                        : Colors.grey[200],
-                    foregroundColor: _userType == UserType.customer
-                        ? Colors.white
-                        : Colors.black,
-                    padding: EdgeInsets.symmetric(vertical: screenWidth * 0.04),
-                  ),
-                  child: Text(
-                    'Customer',
-                    style: TextStyle(fontSize: baseFontSize),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () =>
-                      setState(() => _userType = UserType.handyman),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _userType == UserType.handyman
-                        ? Colors.black
-                        : Colors.grey[200],
-                    foregroundColor: _userType == UserType.handyman
-                        ? Colors.white
-                        : Colors.black,
-                    padding: EdgeInsets.symmetric(vertical: screenWidth * 0.04),
-                  ),
-                  child: Text(
-                    'Handyman',
-                    style: TextStyle(fontSize: baseFontSize),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
 
           // Form Fields
           Text(
@@ -213,11 +166,7 @@ class _SignInFormState extends State<SignInForm> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const RegistrationScreen(),
-                    ),
-                  );
+                  context.go('/register');
                 },
                 child: Text(
                   'Sign up',

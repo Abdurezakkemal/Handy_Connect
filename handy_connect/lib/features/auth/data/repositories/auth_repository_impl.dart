@@ -105,4 +105,10 @@ class AuthRepositoryImpl implements AuthRepository {
     await _firebaseAuth.signOut();
     await GoogleSignIn().signOut();
   }
+
+  @override
+  Future<String> getUserType(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    return doc.data()?['userType'] ?? 'customer';
+  }
 }

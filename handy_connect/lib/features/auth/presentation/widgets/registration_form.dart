@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handy_connect/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:handy_connect/features/auth/presentation/registration_screen.dart';
-import 'package:handy_connect/features/auth/presentation/sign_in_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class RegistrationForm extends StatefulWidget {
   const RegistrationForm({super.key});
@@ -241,11 +241,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const SignInScreen(),
-                    ),
-                  );
+                  context.go('/login');
                 },
                 child: Text(
                   'Sign in',

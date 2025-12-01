@@ -17,4 +17,6 @@ abstract class AuthRepository {
   Future<UserCredential> signInWithGoogle();
 
   Future<void> signOut();
+
+  Future<String> getUserType(String uid);
 }

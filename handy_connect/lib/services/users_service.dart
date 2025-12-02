@@ -1,36 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:handy_connect/models/handymen_model.dart';
+import 'package:handy_connect/models/user.dart';
 
 class UsersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> addUser(HandymenModel handymen) async {
+  Future<void> addUser(User handymen) async {
     await _firestore
-        .collection("users-info")
-        .doc(handymen.id)
+        .collection("users")
+        .doc(handymen.uid)
         .set(handymen.toJson());
   }
 
-  Future<void> updateUser(HandymenModel handymen) async {
+  Future<void> updateUser(User handymen) async {
     await _firestore
-        .collection("users-info")
-        .doc(handymen.id)
+        .collection("users")
+        .doc(handymen.uid)
         .update(handymen.toJson());
   }
 
-  Future<void> deleteUser(HandymenModel handymen) async {
-    await _firestore.collection("users-info").doc(handymen.id).delete();
+  Future<void> deleteUser(User handymen) async {
+    await _firestore.collection("users").doc(handymen.uid).delete();
   }
 
-  Stream<List<HandymenModel>> getFilteredHandymens({required String service}) {
+  Stream<List<User>> filteredHandymensByService({required String service}) {
     return _firestore
-        .collection("users-info")
-        .where('service', isEqualTo: service)
+        .collection("users")
+        .where('serviceType', isEqualTo: service)
         .snapshots()
         .map(
-          (snap) => snap.docs
-              .map((doc) => HandymenModel.fromJson(doc.data()))
-              .toList(),
+          (snap) => snap.docs.map((doc) => User.fromJson(doc.data())).toList(),
         );
+  }
+
+  Stream<User?> filterHandymenById({required String uid}) {
+    return _firestore.collection('users').doc(uid).snapshots().map((
+      DocumentSnapshot<Map<String, dynamic>> doc,
+    ) {
+      final data = doc.data();
+      return data == null ? null : User.fromJson(data);
+    });
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:handy_connect/models/handymen_model.dart';
+import 'package:handy_connect/models/user.dart';
 import 'package:handy_connect/screens/request_service_screen.dart';
 import 'package:handy_connect/services/url_louncher.dart';
 import 'package:handy_connect/widgets/contact_button.dart';
 
 class HandymanDetailPage extends StatelessWidget {
-  final HandymenModel handymen;
+  final User handymen;
 
   const HandymanDetailPage({super.key, required this.handymen});
 
@@ -62,7 +62,7 @@ class HandymanDetailPage extends StatelessWidget {
                     width: 110,
                     height: 110,
                     child: Image.network(
-                      handymen.image,
+                      handymen.profilePhotoUrl,
                       errorBuilder: (context, _, _) =>
                           Icon(Icons.engineering, size: 110),
                       fit: BoxFit.cover,
@@ -78,7 +78,7 @@ class HandymanDetailPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  handymen.service,
+                  handymen.serviceType,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                 ),
                 const SizedBox(height: 4),
@@ -116,13 +116,18 @@ class HandymanDetailPage extends StatelessWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    handymen.description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                      height: 1.4,
-                    ),
+
+                  Row(
+                    children: [
+                      Text(
+                        handymen.experience,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade700,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -142,12 +147,12 @@ class HandymanDetailPage extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   Visibility(
-                    visible: handymen.socialMedia.keys.contains("whatsapp"),
+                    visible: handymen.socialLinks.keys.contains("whatsapp"),
                     child: ContactButton(
                       icon: Icons.chat,
                       label: "Contact via WhatsApp",
                       onTap: () {
-                        launchUniversalLink(handymen.socialMedia["whatsapp"]);
+                        launchUniversalLink(handymen.socialLinks["whatsapp"]);
                       },
                     ),
                   ),
@@ -155,31 +160,25 @@ class HandymanDetailPage extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   Visibility(
-                    visible: handymen.socialMedia.keys.contains("tg"),
+                    visible: handymen.socialLinks.keys.contains("telegram"),
 
                     child: ContactButton(
                       icon: Icons.send,
                       label: "Contact via Telegram",
                       onTap: () {
-                        launchUniversalLink(handymen.socialMedia["tg"]);
+                        launchUniversalLink(handymen.socialLinks["telegram"]);
                       },
                     ),
                   ),
 
                   const SizedBox(height: 10),
 
-                  Visibility(
-                    visible: handymen.socialMedia.keys.contains("phone"),
-
-                    child: ContactButton(
-                      icon: Icons.call,
-                      label: "Call ${handymen.socialMedia["phone"]}",
-                      onTap: () {
-                        launchUniversalLink(
-                          "tel:${handymen.socialMedia["phone"]}",
-                        );
-                      },
-                    ),
+                  ContactButton(
+                    icon: Icons.call,
+                    label: "Call ${handymen.phone}",
+                    onTap: () {
+                      launchUniversalLink("tel:${handymen.phone}");
+                    },
                   ),
                 ],
               ),

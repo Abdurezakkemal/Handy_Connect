@@ -17,7 +17,7 @@ class _HandymanListPageState extends ConsumerState<HandymanListPage> {
   final _fcs = FocusNode();
   @override
   Widget build(BuildContext context) {
-    final handymenList = ref.watch(contentModuleProvider(widget.service));
+    final handymenList = ref.watch(filterHandymensProvider(widget.service));
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -80,9 +80,9 @@ class _HandymanListPageState extends ConsumerState<HandymanListPage> {
                     final item = data[index];
                     return HandymanCard(
                       name: item.name,
-                      job: item.service,
+                      job: item.serviceType,
                       location: item.location,
-                      image: item.image,
+                      image: item.profilePhotoUrl,
                       open: () => Navigator.push(
                         context,
                         MaterialPageRoute(

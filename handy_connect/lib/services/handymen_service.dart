@@ -5,25 +5,22 @@ class HandymenService {
   final _fireStore = FirebaseFirestore.instance;
 
   Future<void> sendBookingRequest(RequestsModel request) async {
-    await _fireStore.collection("booking-requests").add(request.toJson());
+    await _fireStore.collection("requests").add(request.toJson());
   }
 
   Future<void> editBookingRequest(RequestsModel request, String id) async {
-    await _fireStore
-        .collection('booking-requests')
-        .doc(id)
-        .update(request.toJson());
+    await _fireStore.collection('requests').doc(id).update(request.toJson());
   }
 
   Future<void> deleteBookingRequest(String id) async {
-    await _fireStore.collection('booking-requests').doc(id).delete();
+    await _fireStore.collection('requests').doc(id).delete();
   }
 
   Stream<List<RequestsModel>> fetchBookingRequests({required String userId}) {
     return _fireStore
-        .collection('booking-requests')
-        .orderBy('time', descending: true)
-        .where('requesterID', isEqualTo: userId)
+        .collection('requests')
+        .orderBy('createdAt', descending: true)
+        .where('customerId', isEqualTo: userId)
         .snapshots()
         .map(
           (snap) => snap.docs

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:handy_connect/models/requests_model.dart';
-import 'package:handy_connect/models/handymen_model.dart';
+import 'package:handy_connect/models/user.dart';
 import 'package:handy_connect/providers/requests_provider.dart';
 
 class RequestServicePage extends StatefulWidget {
-  final HandymenModel handyman;
+  final User handyman;
 
   const RequestServicePage({super.key, required this.handyman});
 
@@ -189,14 +189,16 @@ class _RequestServicePageState extends State<RequestServicePage> {
                                 setState(() {
                                   _isLoading = true;
                                 });
+
+                                ///Needs modification
                                 final request = RequestsModel(
-                                  requesterID: "user-8283-not-real-id",
-                                  handymenID: widget.handyman.id,
-                                  handymenName: widget.handyman.name,
-                                  service: widget.handyman.service,
-                                  description: issueController.text,
+                                  customerId: "user-8283-not-real-id",
+                                  handymanId: widget.handyman.uid,
+                                  issueDescription: issueController.text,
                                   status: "pending",
-                                  time: selectedDate,
+                                  preferredTime: selectedDate,
+                                  createdAt: DateTime.now(),
+                                  customerName: "Some One",
                                 );
                                 try {
                                   await ref

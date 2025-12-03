@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Carpenter', 'icon': Icons.construction},
     {'name': 'Painter', 'icon': Icons.format_paint},
     {'name': 'AC Repair', 'icon': Icons.ac_unit},
-    {'name': 'General', 'icon': Icons.handyman},
+    {'name': 'General Handyman', 'icon': Icons.handyman},
   ];
   List<Map<String, dynamic>> _filteredServices = [];
 

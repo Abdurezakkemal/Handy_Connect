@@ -19,6 +19,9 @@ class _SignInFormState extends State<SignInForm> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final double baseFontSize = screenWidth < 600 ? 16.0 : 18.0;
+    final isLoading = context.select<AuthBloc, bool>(
+      (bloc) => bloc.state is AuthLoading,
+    );
 
     return Form(
       key: _formKey,
@@ -57,11 +60,25 @@ class _SignInFormState extends State<SignInForm> {
             controller: _emailController,
             decoration: InputDecoration(
               hintText: 'your.email@example.com',
-              border: const OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Colors.black, width: 2.0),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenWidth * 0.04,
                 horizontal: screenWidth * 0.04,
               ),
+              hintStyle: TextStyle(color: Colors.grey.shade500),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || !value.contains('@')) {
@@ -85,11 +102,25 @@ class _SignInFormState extends State<SignInForm> {
             obscureText: true,
             decoration: InputDecoration(
               hintText: 'Enter your password',
-              border: const OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Colors.black, width: 2.0),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenWidth * 0.04,
                 horizontal: screenWidth * 0.04,
               ),
+              hintStyle: TextStyle(color: Colors.grey.shade500),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -102,22 +133,38 @@ class _SignInFormState extends State<SignInForm> {
 
           // Sign In Button
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                context.read<AuthBloc>().add(
-                  SignInRequested(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                  ),
-                );
-              }
-            },
+            onPressed: isLoading
+                ? null
+                : () {
+                    if (_formKey.currentState!.validate()) {
+                      context.read<AuthBloc>().add(
+                        SignInRequested(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        ),
+                      );
+                    }
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: screenWidth * 0.05),
+              elevation: 4,
+              shadowColor: Colors.black26,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
             ),
-            child: Text('Sign In', style: TextStyle(fontSize: baseFontSize)),
+            child: isLoading
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text('Sign In', style: TextStyle(fontSize: baseFontSize)),
           ),
           const SizedBox(height: 20),
 
@@ -136,9 +183,8 @@ class _SignInFormState extends State<SignInForm> {
 
           // Google Sign-In Button
           OutlinedButton.icon(
-            onPressed: () {
-              context.read<AuthBloc>().add(GoogleSignInRequested());
-            },
+            onPressed: () {},
+
             icon: Text(
               'G',
               style: TextStyle(
@@ -152,6 +198,13 @@ class _SignInFormState extends State<SignInForm> {
             ),
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: screenWidth * 0.05),
+              elevation: 2,
+              shadowColor: Colors.black12,
+              side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              backgroundColor: Colors.white,
             ),
           ),
           const SizedBox(height: 30),

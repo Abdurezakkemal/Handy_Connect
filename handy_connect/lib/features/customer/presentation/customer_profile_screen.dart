@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -65,17 +63,11 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
 
   Future<void> _pickImage() async {
     try {
-      developer.log('Attempting to pick image', name: 'CustomerProfileScreen');
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
       );
 
       if (pickedFile != null) {
-        developer.log(
-          'Image selected: ${pickedFile.path}',
-          name: 'CustomerProfileScreen',
-        );
-
         final file = File(pickedFile.path);
         if (!await file.exists()) {
           throw Exception('Selected file does not exist');
@@ -88,28 +80,12 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
         final bloc = context.read<CustomerProfileBloc>();
         if (bloc.state is CustomerProfileLoaded) {
           final customer = (bloc.state as CustomerProfileLoaded).customer;
-          developer.log(
-            'Dispatching UpdateCustomerProfileEvent',
-            name: 'CustomerProfileScreen',
-          );
           bloc.add(UpdateCustomerProfileEvent(customer, _profileImage));
         } else {
           throw Exception('Customer data not loaded');
         }
-      } else {
-        developer.log(
-          'Image selection cancelled',
-          name: 'CustomerProfileScreen',
-        );
-      }
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error in _pickImage: $e',
-        name: 'CustomerProfileScreen',
-        error: e,
-        stackTrace: stackTrace,
-      );
-
+      } else {}
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -149,11 +125,6 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
         body: BlocConsumer<CustomerProfileBloc, CustomerProfileState>(
           listener: (context, state) {
             if (state is CustomerProfileUpdateSuccess) {
-              developer.log(
-                'Profile updated successfully',
-                name: 'CustomerProfileScreen',
-              );
-
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -163,13 +134,6 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                 );
               }
             } else if (state is CustomerProfileError) {
-              developer.log(
-                'Profile Error: ${state.message}',
-                name: 'CustomerProfileScreen',
-                error: state.error,
-                stackTrace: state.stackTrace,
-              );
-
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -179,17 +143,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                 );
               }
             } else if (state is CustomerProfileLoading) {
-              developer.log(
-                'Loading customer profile...',
-                name: 'CustomerProfileScreen',
-              );
-            } else if (state is CustomerProfileLoaded) {
-              developer.log(
-                'Customer profile loaded successfully',
-                name: 'CustomerProfileScreen',
-                time: DateTime.now(),
-              );
-            }
+            } else if (state is CustomerProfileLoaded) {}
           },
           builder: (context, state) {
             if (state is CustomerProfileLoading) {
@@ -204,53 +158,69 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                   children: [
                     Card(
                       elevation: 2,
+                      margin: const EdgeInsets.only(bottom: 20),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: _pickImage,
-                              child: CircleAvatar(
-                                radius: 50,
-                                backgroundImage: _profileImage != null
-                                    ? FileImage(_profileImage!)
-                                    : (customer.profilePhotoUrl.isNotEmpty
-                                              ? NetworkImage(
-                                                  customer.profilePhotoUrl,
-                                                )
-                                              : null)
-                                          as ImageProvider?,
-                                child:
-                                    _profileImage == null &&
-                                        customer.profilePhotoUrl.isEmpty
-                                    ? const Icon(Icons.person, size: 60)
-                                    : null,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 32.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: _pickImage,
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: Colors.grey.shade200,
+                                  child: _profileImage != null
+                                      ? ClipOval(
+                                          child: Image.file(
+                                            _profileImage!,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : customer.profilePhotoUrl.isNotEmpty
+                                      ? ClipOval(
+                                          child: Image.network(
+                                            customer.profilePhotoUrl,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.person,
+                                          size: 50,
+                                          color: Colors.grey,
+                                        ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              customer.name,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                              const SizedBox(height: 20),
+                              Text(
+                                customer.name,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Customer Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Customer Account',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
                     Card(
                       elevation: 2,
                       shape: RoundedRectangleBorder(
@@ -284,25 +254,46 @@ class _CustomerProfileViewState extends State<CustomerProfileView> {
                                       SignOutRequested(),
                                     );
                                   },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 2,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 24,
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black87,
+                              side: BorderSide(
+                                color: Colors.grey.shade300,
+                                width: 1.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              shadowColor: Colors.black12,
+                            ),
                             icon: authState is AuthLoading
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.black87,
+                                      ),
                                     ),
                                   )
-                                : const Icon(Icons.logout),
+                                : const Icon(
+                                    Icons.logout,
+                                    color: Colors.black87,
+                                  ),
                             label: Text(
                               authState is AuthLoading
                                   ? 'Logging out...'
                                   : 'Logout',
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              textStyle: const TextStyle(fontSize: 16),
-                              side: const BorderSide(color: Colors.black),
-                              foregroundColor: Colors.black,
                             ),
                           );
                         },

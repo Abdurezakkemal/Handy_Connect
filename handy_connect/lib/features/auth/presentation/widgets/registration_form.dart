@@ -62,6 +62,11 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         ? Colors.white
                         : Colors.black,
                     padding: EdgeInsets.symmetric(vertical: screenWidth * 0.04),
+                    elevation: 2,
+                    shadowColor: Colors.black12,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
                   ),
                   child: Text(
                     'Customer',
@@ -82,6 +87,11 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         ? Colors.white
                         : Colors.black,
                     padding: EdgeInsets.symmetric(vertical: screenWidth * 0.04),
+                    elevation: 2,
+                    shadowColor: Colors.black12,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
                   ),
                   child: Text(
                     'Handyman',
@@ -106,10 +116,25 @@ class _RegistrationFormState extends State<RegistrationForm> {
             controller: _nameController,
             decoration: InputDecoration(
               hintText: 'Enter your name',
-              border: const OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Colors.black, width: 2.0),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenWidth * 0.04,
+                horizontal: screenWidth * 0.04,
               ),
+              hintStyle: TextStyle(color: Colors.grey.shade500),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -132,10 +157,25 @@ class _RegistrationFormState extends State<RegistrationForm> {
             controller: _emailController,
             decoration: InputDecoration(
               hintText: 'your.email@example.com',
-              border: const OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Colors.black, width: 2.0),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenWidth * 0.04,
+                horizontal: screenWidth * 0.04,
               ),
+              hintStyle: TextStyle(color: Colors.grey.shade500),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || !value.contains('@')) {
@@ -159,10 +199,25 @@ class _RegistrationFormState extends State<RegistrationForm> {
             obscureText: true,
             decoration: InputDecoration(
               hintText: 'Enter your password',
-              border: const OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Colors.black, width: 2.0),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 vertical: screenWidth * 0.04,
+                horizontal: screenWidth * 0.04,
               ),
+              hintStyle: TextStyle(color: Colors.grey.shade500),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || value.length < 6) {
@@ -191,6 +246,11 @@ class _RegistrationFormState extends State<RegistrationForm> {
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: screenWidth * 0.06),
+              elevation: 4,
+              shadowColor: Colors.black26,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
             ),
             child: Text('Sign Up', style: TextStyle(fontSize: baseFontSize)),
           ),
@@ -211,9 +271,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
           // Google Sign-In Button
           OutlinedButton.icon(
-            onPressed: () {
-              context.read<AuthBloc>().add(GoogleSignInRequested());
-            },
+            onPressed: () {},
+
             icon: Text(
               'G',
               style: TextStyle(
@@ -227,6 +286,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
             ),
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: screenWidth * 0.06),
+              elevation: 2,
+              shadowColor: Colors.black12,
+              side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              backgroundColor: Colors.white,
             ),
           ),
           const SizedBox(height: 30),

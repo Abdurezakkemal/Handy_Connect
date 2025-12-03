@@ -7,6 +7,7 @@ import 'package:handy_connect/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:handy_connect/features/handyman/domain/models/handyman_user.dart';
 import 'package:handy_connect/features/handyman/presentation/bloc/profile_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileSetupScreen extends StatelessWidget {
   const ProfileSetupScreen({super.key});
@@ -75,11 +76,22 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Complete Your Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            context.go('/handyman_home');
+          },
+        ),
+        title: const Text(
+          'Complete Your Profile',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 1,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () {
               context.read<AuthBloc>().add(SignOutRequested());
             },
@@ -170,27 +182,117 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
                   Center(
                     child: TextButton.icon(
                       onPressed: _pickImage,
-                      icon: const Icon(Icons.upload_file),
-                      label: const Text('Upload Photo'),
+                      icon: const Icon(
+                        Icons.upload_file,
+                        color: Colors.black87,
+                      ),
+                      label: Text(
+                        'Upload Photo',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: MediaQuery.of(context).size.width < 600
+                              ? 14.0
+                              : 16.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          side: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+                        backgroundColor: Colors.grey.shade100,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _buildTextField(_nameController, 'Full Name *'),
-                  _buildTextField(_phoneController, 'Phone Number *'),
+                  _buildTextField(
+                    _nameController,
+                    'Full Name',
+                    isRequired: true,
+                  ),
+                  _buildTextField(
+                    _phoneController,
+                    'Phone Number',
+                    isRequired: true,
+                    keyboardType: TextInputType.phone,
+                  ),
                   _buildTextField(
                     _whatsappController,
-                    'WhatsApp Number (optional)',
+                    'WhatsApp Number',
+                    isRequired: false,
+                    keyboardType: TextInputType.phone,
                   ),
                   _buildTextField(
                     _telegramController,
-                    'Telegram Username (optional)',
+                    'Telegram Username',
+                    isRequired: false,
                   ),
                   _buildServiceTypeDropdown(),
-                  _buildTextField(_locationController, 'Location *'),
                   _buildTextField(
-                    _descriptionController,
-                    'Description *',
-                    maxLines: 4,
+                    _locationController,
+                    'Location',
+                    isRequired: true,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width < 600
+                              ? 14.0
+                              : 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 4,
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width < 600
+                              ? 14.0
+                              : 16.0,
+                        ),
+                        decoration: InputDecoration(
+                          hintText:
+                              'Tell us about yourself and your services...',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                              color: Colors.black,
+                              width: 2.0,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.all(16.0),
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: MediaQuery.of(context).size.width < 600
+                                ? 14.0
+                                : 16.0,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
@@ -247,31 +349,66 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
   Widget _buildTextField(
     TextEditingController controller,
     String label, {
-    int maxLines = 1,
+    bool isRequired = true,
+    TextInputType? keyboardType,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: controller,
-            maxLines: maxLines,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              hintText: label.replaceAll(' *', ''),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final baseFontSize = screenWidth < 600 ? 14.0 : 16.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label + (isRequired ? ' *' : ''),
+          style: TextStyle(fontSize: baseFontSize, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          style: TextStyle(fontSize: baseFontSize),
+          decoration: InputDecoration(
+            hintText: 'Enter ${label.toLowerCase().replaceAll('*', '').trim()}',
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade300),
             ),
-            validator: (value) {
-              if (label.endsWith('*') && (value == null || value.isEmpty)) {
-                return 'Please enter your $label';
-              }
-              return null;
-            },
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(color: Colors.black, width: 2.0),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: screenWidth * 0.04,
+              horizontal: screenWidth * 0.04,
+            ),
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: baseFontSize,
+            ),
           ),
-        ],
-      ),
+          validator: (value) {
+            if (isRequired && (value == null || value.isEmpty)) {
+              return 'This field is required';
+            }
+            if (keyboardType == TextInputType.phone &&
+                value != null &&
+                value.isNotEmpty) {
+              final phoneRegex = RegExp(r'^[0-9+\-\s()]{10,}$');
+              if (!phoneRegex.hasMatch(value)) {
+                return 'Please enter a valid phone number';
+              }
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
@@ -285,44 +422,69 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
   ];
 
   Widget _buildServiceTypeDropdown() {
-    // Ensure _serviceType is always set to a valid value
-    final selectedServiceType = _serviceTypes.contains(_serviceType)
-        ? _serviceType
-        : _serviceTypes.first;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final baseFontSize = screenWidth < 600 ? 14.0 : 16.0;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Service Type *',
-            style: TextStyle(fontWeight: FontWeight.bold),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Service Type *',
+          style: TextStyle(fontSize: baseFontSize, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _serviceType,
+          isExpanded: true,
+          style: TextStyle(fontSize: baseFontSize, color: Colors.black87),
+          decoration: InputDecoration(
+            hintText: 'Select your service type',
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(color: Colors.black, width: 2.0),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: screenWidth * 0.04,
+              horizontal: screenWidth * 0.04,
+            ),
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: baseFontSize,
+            ),
           ),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            value: selectedServiceType,
-            hint: const Text('Select a service type'),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _serviceType = value;
-                });
-              }
-            },
-            items: _serviceTypes.map((type) {
-              return DropdownMenuItem(value: type, child: Text(type));
-            }).toList(),
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select a service type';
-              }
-              return null;
-            },
-          ),
-        ],
-      ),
+          icon: const Icon(Icons.arrow_drop_down, color: Colors.black87),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(12.0),
+          items: _serviceTypes.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value, style: TextStyle(fontSize: baseFontSize)),
+            );
+          }).toList(),
+          onChanged: (newValue) {
+            setState(() {
+              _serviceType = newValue!;
+            });
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please select a service type';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

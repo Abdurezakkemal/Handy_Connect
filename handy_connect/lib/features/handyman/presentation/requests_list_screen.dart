@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handy_connect/core/locator.dart';
 import 'package:handy_connect/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:handy_connect/features/handyman/domain/models/service_request.dart';
+import 'package:handy_connect/features/handyman/presentation/request_details_screen.dart';
 import 'package:handy_connect/features/handyman/presentation/bloc/requests_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:handy_connect/features/handyman/presentation/widgets/request_card.dart';
@@ -28,6 +29,44 @@ class RequestsListView extends StatefulWidget {
 
 class _RequestsListViewState extends State<RequestsListView>
     with SingleTickerProviderStateMixin {
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? Colors.black.withOpacity(0.05) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isActive ? activeIcon : icon,
+              color: isActive ? Colors.black87 : Colors.grey,
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? Colors.black87 : Colors.grey,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   late TabController _tabController;
   int _selectedIndex = 0;
 
@@ -62,23 +101,49 @@ class _RequestsListViewState extends State<RequestsListView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Service Requests'),
-        leading: const Icon(Icons.build_outlined),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              context.go('/handyman_profile_setup');
-            },
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Pending'),
-            Tab(text: 'All Requests'),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.build_outlined,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Service Requests',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Manage your service requests',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
           ],
         ),
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.black,
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          tabs: const [
+            Tab(text: 'PENDING'),
+            Tab(text: 'ALL REQUESTS'),
+          ],
+        ),
+        elevation: 0,
       ),
       body: BlocBuilder<RequestsBloc, RequestsState>(
         builder: (context, state) {
@@ -107,26 +172,45 @@ class _RequestsListViewState extends State<RequestsListView>
           return const Center(child: Text('No requests found.'));
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 1) {
-            context.go('/handyman_profile_setup');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt),
-            label: 'Requests',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(
+                icon: Icons.list_alt_outlined,
+                activeIcon: Icons.list_alt_rounded,
+                label: 'Requests',
+                isActive: _selectedIndex == 0,
+                onTap: () {
+                  setState(() => _selectedIndex = 0);
+                },
+              ),
+              _buildNavItem(
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profile',
+                isActive: _selectedIndex == 1,
+                onTap: () {
+                  setState(() => _selectedIndex = 1);
+                  context.go('/handyman_profile_setup');
+                },
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -156,7 +240,19 @@ class _RequestsListViewState extends State<RequestsListView>
       itemCount: requests.length,
       itemBuilder: (context, index) {
         final request = requests[index];
-        return RequestCard(request: request);
+        return RequestCard(
+          request: request,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<RequestsBloc>(),
+                  child: RequestDetailsScreen(request: request),
+                ),
+              ),
+            );
+          },
+        );
       },
     );
   }

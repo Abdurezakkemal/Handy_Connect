@@ -11,20 +11,77 @@ class HandymanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: handyman.profilePhotoUrl.isNotEmpty
-              ? NetworkImage(handyman.profilePhotoUrl)
-              : null,
-          child: handyman.profilePhotoUrl.isEmpty
-              ? const Icon(Icons.person)
-              : null,
-        ),
-        title: Text(handyman.name),
-        subtitle: Text(handyman.location),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
         onTap: () {
           context.push('/handyman_profile', extra: handyman);
         },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: handyman.profilePhotoUrl.isNotEmpty
+                    ? Image.network(
+                        handyman.profilePhotoUrl,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        width: 70,
+                        height: 70,
+                        color: Colors.grey[200],
+                        child: const Icon(
+                          Icons.person,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      handyman.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      handyman.serviceType,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          handyman.location,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

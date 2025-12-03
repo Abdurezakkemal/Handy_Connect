@@ -3,7 +3,6 @@ import 'package:handy_connect/features/auth/data/repositories/auth_repository_im
 import 'package:handy_connect/features/auth/domain/repositories/auth_repository.dart';
 import 'package:handy_connect/features/auth/domain/usecases/signin.dart';
 import 'package:handy_connect/features/auth/domain/usecases/signup.dart';
-import 'package:handy_connect/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:handy_connect/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:handy_connect/features/handyman/data/repositories/handyman_repository_impl.dart';
 import 'package:handy_connect/features/handyman/domain/repositories/handyman_repository.dart';
@@ -31,12 +30,8 @@ final GetIt locator = GetIt.instance;
 void setupLocator() {
   // Blocs
   locator.registerFactory(
-    () => AuthBloc(
-      signUp: locator(),
-      signIn: locator(),
-      signInWithGoogle: locator(),
-      getUserType: locator(),
-    ),
+    () =>
+        AuthBloc(signUp: locator(), signIn: locator(), getUserType: locator()),
   );
   locator.registerFactory(
     () => RequestsBloc(
@@ -63,7 +58,6 @@ void setupLocator() {
   // Use Cases
   locator.registerLazySingleton(() => SignUp(locator()));
   locator.registerLazySingleton(() => SignIn(locator()));
-  locator.registerLazySingleton(() => SignInWithGoogle(locator()));
   locator.registerLazySingleton(() => GetServiceRequests(locator()));
   locator.registerLazySingleton(() => GetHandymanProfile(locator()));
   locator.registerLazySingleton(() => UpdateHandymanProfile(locator()));

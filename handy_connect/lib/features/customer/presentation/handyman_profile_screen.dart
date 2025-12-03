@@ -11,79 +11,24 @@ class HandymanProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: handyman.profilePhotoUrl.isNotEmpty
-                  ? NetworkImage(handyman.profilePhotoUrl)
-                  : null,
-              child: handyman.profilePhotoUrl.isEmpty
-                  ? const Icon(Icons.person, size: 60)
-                  : null,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              handyman.name,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              handyman.serviceType,
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(
-                  handyman.location,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ],
-            ),
-            const Divider(height: 40),
-            const Text(
-              'About',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              handyman.description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const Divider(height: 40),
-            const Text(
-              'Contact Options',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            _buildContactButton(
-              'Contact via WhatsApp',
-              Icons.chat_bubble_outline,
-              () => _launchURL(
-                'https://wa.me/${handyman.socialLinks['whatsapp']}',
-              ),
-            ),
-            _buildContactButton(
-              'Contact via Telegram',
-              Icons.send_outlined,
-              () => _launchURL(
-                'https://t.me/${handyman.socialLinks['telegram']}',
-              ),
-            ),
-            _buildContactButton(
-              'Call ${handyman.phone}',
-              Icons.call_outlined,
-              () => _launchURL('tel:${handyman.phone}'),
-            ),
-          ],
+      appBar: AppBar(
+        title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
         ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          _buildProfileHeader(context),
+          const SizedBox(height: 24),
+          _buildInfoCard('About', handyman.description),
+          const SizedBox(height: 16),
+          _buildInfoCard('Experience', handyman.experience),
+          const SizedBox(height: 24),
+          _buildContactOptions(context),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -95,6 +40,9 @@ class HandymanProfileScreen extends StatelessWidget {
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: const Text('Request Service', style: TextStyle(fontSize: 16)),
         ),
@@ -102,32 +50,152 @@ class HandymanProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactButton(
-    String text,
-    IconData icon,
-    VoidCallback onPressed,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: OutlinedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, color: Colors.black),
-        label: Text(text, style: const TextStyle(color: Colors.black)),
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.grey),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  Widget _buildProfileHeader(BuildContext context) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 60,
+          backgroundImage: handyman.profilePhotoUrl.isNotEmpty
+              ? NetworkImage(handyman.profilePhotoUrl)
+              : null,
+          child: handyman.profilePhotoUrl.isEmpty
+              ? const Icon(Icons.person, size: 60, color: Colors.grey)
+              : null,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          handyman.name,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          handyman.serviceType,
+          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 4),
+            Text(
+              handyman.location,
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard(String title, String content) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Future<void> _launchURL(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      // TODO: Show a snackbar with an error message
+  Widget _buildContactOptions(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Contact Options',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.chat_bubble_outline),
+              title: const Text('Contact via WhatsApp'),
+              onTap: () => _launchURL(
+                context,
+                'https://wa.me/${handyman.socialLinks['whatsapp']}',
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.send_outlined),
+              title: const Text('Contact via Telegram'),
+              onTap: () {
+                final username =
+                    handyman.socialLinks['telegram']?.replaceAll('@', '') ?? '';
+                _launchURL(context, 'https://t.me/$username');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.call_outlined),
+              title: Text('Call ${handyman.phone}'),
+              onTap: () => _launchURL(context, 'tel:${handyman.phone}'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launchURL(BuildContext context, String url) async {
+    try {
+      final uri = Uri.parse(url);
+
+      // Handle Telegram URLs specially
+      if (url.startsWith('https://t.me/')) {
+        final username = url.replaceAll('https://t.me/', '');
+        final telegramUrl = 'tg://resolve?domain=$username';
+        final telegramUri = Uri.parse(telegramUrl);
+
+        // Try to launch Telegram app first
+        if (await canLaunchUrl(telegramUri)) {
+          await launchUrl(telegramUri);
+          return;
+        }
+        // Fallback to web version if app is not installed
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri);
+          return;
+        }
+      } else {
+        // Handle other URLs normally
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri);
+          return;
+        }
+      }
+
+      // If we get here, launching failed
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open the link: $url')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('An error occurred while trying to open the link'),
+          ),
+        );
+      }
     }
   }
 }

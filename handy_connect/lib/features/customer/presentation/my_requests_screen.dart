@@ -95,7 +95,14 @@ class MyRequestsView extends StatelessWidget {
                   debugPrint(
                     'MyRequestsView - Rendering request: ${request.requestId}',
                   );
-                  return RequestCard(request: request);
+                  return RequestCard(
+                    request: request,
+                    onTap: () {
+                      // TODO: Navigate to request details screen
+                      // You'll need to implement this navigation based on your app's routing
+                      debugPrint('Tapped on request: ${request.requestId}');
+                    },
+                  );
                 },
               );
             }

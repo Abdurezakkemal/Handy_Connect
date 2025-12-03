@@ -2,31 +2,131 @@ import 'package:flutter/material.dart';
 import 'package:handy_connect/features/customer/presentation/widgets/category_card.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _searchQuery = '';
+  final List<Map<String, dynamic>> _allServices = [
+    {'name': 'Electrician', 'icon': Icons.flash_on},
+    {'name': 'Plumber', 'icon': Icons.plumbing},
+    {'name': 'Carpenter', 'icon': Icons.construction},
+    {'name': 'Painter', 'icon': Icons.format_paint},
+    {'name': 'AC Repair', 'icon': Icons.ac_unit},
+    {'name': 'General', 'icon': Icons.handyman},
+  ];
+  List<Map<String, dynamic>> _filteredServices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredServices = _allServices;
+  }
+
+  void _filterServices(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredServices = _allServices
+          .where(
+            (service) =>
+                service['name'].toLowerCase().contains(query.toLowerCase()),
+          )
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('HandyConnect'),
-        leading: const Icon(Icons.build_outlined),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.build_outlined,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'HandyConnect',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Find skilled professionals',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: const Color.fromARGB(255, 82, 82, 82),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Find skilled professionals',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Search for services...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                onChanged: _filterServices,
+                decoration: InputDecoration(
+                  hintText: 'Search for services...',
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
+                  ),
+                  hintStyle: TextStyle(color: Colors.grey.shade500),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -40,14 +140,14 @@ class HomeScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                children: const [
-                  CategoryCard(category: 'Electrician', icon: Icons.flash_on),
-                  CategoryCard(category: 'Plumber', icon: Icons.plumbing),
-                  CategoryCard(category: 'Carpenter', icon: Icons.construction),
-                  CategoryCard(category: 'Painter', icon: Icons.format_paint),
-                  CategoryCard(category: 'AC Repair', icon: Icons.ac_unit),
-                  CategoryCard(category: 'General', icon: Icons.handyman),
-                ],
+                children: _filteredServices
+                    .map(
+                      (service) => CategoryCard(
+                        category: service['name'],
+                        icon: service['icon'],
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ],
